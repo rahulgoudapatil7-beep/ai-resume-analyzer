@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard - Resume Analyzer</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111827; color: #f3f4f6; padding: 30px; }
+    h1 { color: #4f46e5; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 10px; border-bottom: 1px solid #374151; text-align: left; font-size: 14px; }
+    th { background: #1f2937; }
+    tr:hover { background: #1f2937; }
+    .score { font-weight: bold; color: #a78bfa; }
+    #stats { margin-top: 10px; color: #9ca3af; }
+  </style>
+</head>
+<body>
+  <h1>📊 Resume Analyzer — Admin Dashboard</h1>
+  <div id="stats">Loading...</div>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Filename</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Score</th>
+        <th>Skills</th>
+        <th>Uploaded At</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+
+  <script>
+    fetch("http://127.0.0.1:8000/admin/dashboard")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("stats").innerText =
+          `Total resumes analyzed: ${data.total_uploads}`;
+
+        const tbody = document.getElementById("table-body");
+        data.records.forEach(r => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${r.id}</td>
+            <td>${r.filename}</td>
+            <td>${r.email}</td>
+            <td>${r.phone}</td>
+            <td class="score">${r.score}/100</td>
+            <td>${r.skills}</td>
+            <td>${r.timestamp}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      })
+      .catch(err => {
+        document.getElementById("stats").innerText =
+          "Could not load dashboard data. Is the backend running?";
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
